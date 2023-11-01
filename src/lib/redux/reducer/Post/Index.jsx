@@ -1,29 +1,17 @@
-import { useSelector, useDispatch } from 'react-redux'
-import { useEffect } from 'react';
-import Excerpt from './Excerpt';
+import { useSelector, } from 'react-redux'
+import Excerpt from '../Post/Card/Excerpt';
 import
 {
   selectAllPosts,
   getPostsError,
   getPostsStatus,
-  fetchPosts
 } from './action';
-import { Form } from './Form';
 
 export default function Index ()
 {
-  const dispatch = useDispatch()
   const posts = useSelector( selectAllPosts )
   const postStatus = useSelector( getPostsStatus )
   const postsError = useSelector( getPostsError )
-
-  useEffect( () =>
-  {
-    if ( postStatus === 'idle' )
-    {
-      dispatch( fetchPosts() )
-    }
-  }, [ postStatus, dispatch ] )
 
 
   let content;
@@ -48,7 +36,7 @@ export default function Index ()
   }
 
   return <section className='flex flex-row m-5 gap-5'>
-    <Form />
+    {/* <Form /> */ }
     <div className="card bg-base-300">
       <div className="card-body">
         <h2 className='card-title'>Posts</h2>

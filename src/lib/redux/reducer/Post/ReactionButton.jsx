@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { reactionAdded } from './action';
-import { reactionEmoji } from './Excerpt';
+import { reactionAdded, reactionEmoji } from './action';
 
 export function ReactionButton ( { post } )
 {
@@ -8,7 +7,6 @@ export function ReactionButton ( { post } )
   // console.log( post )
   const reactionButton = Object.entries( reactionEmoji ).map( ( [ name, emoji ] ) =>
   {
-    // console.log( emoji )
     return (
       <button key={ name }
         type='button'

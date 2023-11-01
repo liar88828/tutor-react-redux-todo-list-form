@@ -2,6 +2,14 @@ import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit/dist'
 import { sub } from 'date-fns'
 const POST_URL = 'https://jsonplaceholder.typicode.com/posts'
 
+export const reactionEmoji = {
+  thumbsUp: '👍',
+  wow: '😀',
+  heart: '❤️',
+  rocket: '🚀',
+  coffee: '☕'
+}
+
 export const reaction = {
   thumbsUp: 0,
   wow: 0,
@@ -10,66 +18,94 @@ export const reaction = {
   coffee: 0
 }
 
+
+
+const FetchApi = async ( method, id = '', initial = {}, ) =>
+{
+  try
+  {
+    let option = { method: method, }
+
+    if ( method !== 'GET' && method !== 'DELETE' )
+    {
+      option = {
+        body: JSON.stringify( initial ),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        ...option
+      }
+    }
+
+    // console.log(option)
+    const res = await fetch( POST_URL + `/${ id }`, option )
+
+    // console.log( res )
+    if ( method !== 'DELETE' )
+    {
+      return res.json()
+    }
+    return res
+  } catch ( error )
+  {
+    console.error( `error ${ method }` )
+    return error.message
+  }
+}
+
 export const fetchPosts = createAsyncThunk( 'posts/fetchPosts', async () =>
 {
   try
   {
-    const res = await fetch( POST_URL ).then( data => data.json() )
+    const res = await fetch( POST_URL )
+      .then( data => data.json() )
     return res
   } catch ( error )
   {
     return error.message
   }
 } )
+
+
 
 
 export const addNewPosts = createAsyncThunk( 'posts/addNewPosts', async ( initialPost ) =>
 {
-  try
-  {
-    // console.log( initialState )
-    const res = await fetch( POST_URL, {
-      method: 'POST',
-      body: JSON.stringify( initialPost ),
-      headers: {
-        'Content-Type': "application/json"
-      }
-    } ).then( data => data.json() )
-
-
-    console.log( res )
-    return res
-  } catch ( error )
-  {
-    return error.message
-  }
+  return FetchApi( 'POST', '', initialPost )
 } )
 
 
 
-// const initialState = [
-//   {
-//     id: '1',
-//     title: "Learning Redux Toolkit",
-//     context: "Lorem ipsum dolor sit, amet consectetur",
-//     date: sub( new Date, { minutes: 10 } ).toISOString(),
-//     reactions: reaction
-//   },
-//   {
-//     id: '2',
-//     title: "slices",
-//     context: "  tenetur esse iusto sit eligendi",
-//     date: sub( new Date, { minutes: 20 } ).toISOString(),
-//     reactions: reaction
-//   }
-// ]
+
+export const updatePosts = createAsyncThunk( 'posts/updatePosts', async ( initialPost ) =>
+{
+  const { id, } = initialPost
+  const data = await FetchApi( 'PUT', id, initialPost )
+  return data
+} )
+
+
+
+export const deletePosts = createAsyncThunk(
+  'posts/deletePosts',
+  async ( initialPost ) =>
+  {
+    const { id } = initialPost
+    const res = await FetchApi( 'DELETE', id )
+
+    if ( res.ok )
+    {
+      return initialPost
+    }
+    else return {}
+  } )
+
 
 const initialState = {
   posts: [],
   status: "idle",//'loading'|'success'|'failed'
   error: null
 }
-
 
 export const postsSlice = createSlice( {
   name: "posts",
@@ -85,7 +121,7 @@ export const postsSlice = createSlice( {
 
       prepare ( title, context, userId )
       {
-        console.log( userId )
+        // console.log( userId )
         return {
           payload: {
             id: nanoid(),
@@ -114,7 +150,10 @@ export const postsSlice = createSlice( {
   extraReducers ( builder )
   {
     builder
-      .addCase( fetchPosts.pending, ( state, ) => { state.status = 'loading' } )
+      .addCase( fetchPosts.pending, ( state, ) =>
+      {
+        state.status = 'loading'
+      } )
       .addCase( fetchPosts.fulfilled, ( state, action ) =>
       {
         state.status = 'success'
@@ -133,10 +172,42 @@ export const postsSlice = createSlice( {
         action.payload.userId = Number( action.payload.userId )
         action.payload.date = new Date().toISOString()
         action.payload.reactions = reaction
-        console.log( action.payload )
+        // console.log( action.payload )
         state.posts.push( action.payload )
-      }
-      )
+      } )
+      .addCase( updatePosts.fulfilled, ( state, action ) =>
+      {
+        if ( !action.payload.id )
+        {
+          console.log( 'Update could not complete' )
+          console.log( action.payload )
+          return
+        }
+        const { id } = action.payload
+        action.payload.date = new Date().toISOString()
+        // console.log( state.posts )
+
+        const posts = state.posts.filter( post => post.id !== id );
+        state.posts = [ ...posts, action.payload ];
+
+      } )
+
+      .addCase( deletePosts.fulfilled, ( state, action ) =>
+      {
+
+
+        console.log( action )
+        if ( !action.payload.id )
+        {
+          console.log( 'cannot delete the this post' )
+          // console.log( action.payload )
+          return
+        }
+        const { id } = action.payload
+        console.log( state.posts )
+        const posts = state.posts.filter( post => post.id !== id )
+        state.posts = posts
+      } )
   }
 } )
 
@@ -146,4 +217,7 @@ export const { postAdded, reactionAdded } = postsSlice.actions
 export const selectAllPosts = ( state ) => state.posts.posts
 export const getPostsStatus = ( state ) => state.posts.status
 export const getPostsError = ( state ) => state.posts.error
+
+export const selectPostById = ( state, postId ) => state.posts.posts.find( post => post.id === postId )
+
 export default postsSlice.reducer

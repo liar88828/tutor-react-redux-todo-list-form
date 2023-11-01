@@ -1,16 +1,19 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { selectAllUsers } from '../User/action';
-import { addNewPosts } from './action';
+import { selectAllUsers } from '../../User/action';
+import { addNewPosts } from '../action';
 
+import { useNavigate } from 'react-router-dom'
 
-export function Form ()
+export function Create ()
 {
   const [ title, setTitle ] = useState( '' );
   const [ context, setContext ] = useState( '' );
   const [ userId, setUserId ] = useState( '' );
   const [ addRequest, setAddRequest ] = useState( 'idle' );
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   const canSave = [ title, context, userId ].every( Boolean ) && addRequest === 'idle';
 
   const users = useSelector( selectAllUsers );
@@ -29,6 +32,7 @@ export function Form ()
         setTitle( '' );
         setContext( '' );
         setUserId( '' );
+        navigate( `/` )
       } catch ( error )
       {
         console.log( 'failed to save the post', error );
@@ -36,11 +40,9 @@ export function Form ()
     }
   };
 
-
   const usersOption = users.map( u => <option key={ u.id }
     value={ u.id }> { u.name } </option>
   );
-
 
   return (
     <div className="">
@@ -75,10 +77,14 @@ export function Form ()
               </span>
               <select
                 value={ userId }
-                defaultValue={ '' }
                 onChange={ e => setUserId( e.target.value ) }
                 className="select select-primary w-full max-w-xs">
-                <option disabled selected>What is the best TV show?</option>
+                <option disabled selected
+                  value=''
+
+                >
+
+                  What is the best TV show?</option>
                 { usersOption }
               </select>
             </label>
