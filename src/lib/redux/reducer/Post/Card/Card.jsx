@@ -2,7 +2,8 @@ import { TimeAgo } from '../TimeAgo'
 import { ReactionButton } from '../ReactionButton'
 import UserPost from '../../User/Index'
 import { Link } from 'react-router-dom'
-export default function Card ( { post, page = '', id = '' } )
+// import { memo } from 'react'
+const Card = ( { post, page = '', id = '' } ) =>
 {
   return (
     <article
@@ -30,3 +31,6 @@ export default function Card ( { post, page = '', id = '' } )
     </article>
   )
 }
+
+// Card = memo( Card )
+export default Card

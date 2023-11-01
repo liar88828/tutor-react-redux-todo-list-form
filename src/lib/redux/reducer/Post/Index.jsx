@@ -5,11 +5,12 @@ import
   selectAllPosts,
   getPostsError,
   getPostsStatus,
+  selectPostIds,
 } from './action';
 
 export default function Index ()
 {
-  const posts = useSelector( selectAllPosts )
+  const orderPostId = useSelector( selectPostIds )
   const postStatus = useSelector( getPostsStatus )
   const postsError = useSelector( getPostsError )
 
@@ -22,13 +23,19 @@ export default function Index ()
     content = <p>loading...</p>
   } else if ( postStatus === 'success' )
   {
-    const orderedPosts = posts.slice().sort( ( a, b ) => b.date.localeCompare( a.date ) )
+    // const orderedPosts = orderPostId.slice().sort( ( a, b ) => b.date.localeCompare( a.date ) )
 
-    content = orderedPosts
-      .map( post => <Excerpt
-        key={ post.id }
-        post={ post }
-      />
+    content = orderPostId
+      .map( postId =>
+      {
+        // console.log( postId )
+        return ( 
+            <Excerpt
+          key={ postId }
+          postId={ postId }
+          />
+        )
+      }
       )
   } else if ( postStatus === 'failed' )
   {
