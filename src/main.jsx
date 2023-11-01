@@ -5,11 +5,11 @@ import { store } from './lib/redux/store.js'
 import { Provider } from 'react-redux'
 import { fetchUsers } from './lib/redux/reducer/User/action.js'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { fetchPosts } from './lib/redux/reducer/Post/action.js'
 import { ApiProvider } from '@reduxjs/toolkit/query/react'
-import { apiSlice } from './lib/redux/apis/action'
+import { apiSlice } from './lib/redux/apis.js'
+import { extendedApiPost } from './lib/redux/reducer/Post/action.js'
 
-store.dispatch( fetchPosts() )// untuk menggantikan useEffect
+store.dispatch( extendedApiPost.endpoints.getPosts.initiate() )// untuk menggantikan useEffect
 store.dispatch( fetchUsers() )// untuk menggantikan useEffect
 
 

@@ -1,21 +1,20 @@
-import { useDispatch } from 'react-redux';
-import { reactionAdded, reactionEmoji } from './action';
+import { reactionEmoji } from '../utils';
+import { useAddReactionMutation } from './action';
 
 export function ReactionButton ( { post } )
 {
-  const dispatch = useDispatch();
+  const [ reactionAdded ] = useAddReactionMutation()
   // console.log( post )
   const reactionButton = Object.entries( reactionEmoji ).map( ( [ name, emoji ] ) =>
   {
     return (
       <button key={ name }
         type='button'
-        onClick={ () => dispatch( reactionAdded(
+        onClick={ async () => reactionAdded(
           {
             postId: post.id,
             reaction: name
-          } ) ) }
-
+          } ) }
       >
         { emoji } { post.reactions[ name ] }
       </button>

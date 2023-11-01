@@ -2,44 +2,37 @@ import { useSelector, } from 'react-redux'
 import Excerpt from '../Post/Card/Excerpt';
 import
 {
-  selectAllPosts,
-  getPostsError,
-  getPostsStatus,
   selectPostIds,
+  useGetPostsQuery,
 } from './action';
 
 export default function Index ()
 {
+  const { isLoading, isError, error, isSuccess } = useGetPostsQuery();
   const orderPostId = useSelector( selectPostIds )
-  const postStatus = useSelector( getPostsStatus )
-  const postsError = useSelector( getPostsError )
-
 
   let content;
-
-  if ( postStatus === 'loading' )
+  if ( isLoading === 'loading' )
   {
-
     content = <p>loading...</p>
-  } else if ( postStatus === 'success' )
+  }
+  else if ( isSuccess )
   {
-    // const orderedPosts = orderPostId.slice().sort( ( a, b ) => b.date.localeCompare( a.date ) )
-
     content = orderPostId
       .map( postId =>
       {
         // console.log( postId )
-        return ( 
-            <Excerpt
-          key={ postId }
-          postId={ postId }
+        return (
+          <Excerpt
+            key={ postId }
+            postId={ postId }
           />
         )
       }
       )
-  } else if ( postStatus === 'failed' )
+  } else if ( isError )
   {
-    content = <p>{ postsError }</p>
+    content = <p>{ error }</p>
   }
 
   return <section className='flex flex-row m-5 gap-5'>

@@ -5,11 +5,7 @@ import
   useAddTodoMutation,
   useDeleteTodoMutation,
   useUpdateTodoMutation
-} from "../../apis/action"
-import ta from "date-fns/esm/locale/ta/index"
-
-
-
+} from "../../reducer/Todo/action.js"
 
 
 const Index = () =>
@@ -42,7 +38,6 @@ const Index = () =>
     // console.log( newTodo )
     addTodo( {
       userId: 1,
-      // title: 'milos',
       title: newTodo,
       complete: false
     } )
@@ -103,7 +98,7 @@ const Index = () =>
               ...t,
               complete: !t.complete
             } ) } />
-          
+
           <button
             type="button"
             onClick={ () => deleteTodo( t.id ) }

@@ -1,10 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createEntityAdapter } from "@reduxjs/toolkit"
+import { apiSlice } from "../../apis"
 
-export const apiSlice = createApi( {
-  reducerPath: 'api',
-  tagTypes: [ 'Todos', ],
-  baseQuery: fetchBaseQuery(
-    { baseUrl: 'http://localhost:3500' } ),
+const todosAdapter = createEntityAdapter( {
+  sortComparer: ( a, b ) => b.date.localeCompare( a.date )
+} )
+
+todosAdapter.getInitialState()
+
+export const extendedApiTodos = apiSlice.injectEndpoints( {
   endpoints: ( builder ) => ( {
 
     getTodos: builder.query( {
@@ -47,9 +50,10 @@ export const apiSlice = createApi( {
 } )
 
 
+
 export const {
   useGetTodosQuery
   , useAddTodoMutation
   , useDeleteTodoMutation
   , useUpdateTodoMutation
-} = apiSlice
+} = extendedApiTodos

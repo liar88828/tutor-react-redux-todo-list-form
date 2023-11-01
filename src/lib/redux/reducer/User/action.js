@@ -3,9 +3,6 @@ const USER_URL = 'https://jsonplaceholder.typicode.com/users'
 
 
 const initialState = [
-  // { id: '1', name: "Philip" },
-  // { id: '2', name: "Ruth", },
-  // { id: '3', name: "Sue", }
 ]
 
 export const fetchUsers = createAsyncThunk( 'users/fetchUsers', async () =>

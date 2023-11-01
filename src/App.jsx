@@ -9,7 +9,6 @@ import { Edit } from './lib/redux/reducer/Post/Form/Edit.jsx'
 import UserList from './lib/redux/reducer/User/List.jsx'
 import UserPage from './lib/redux/reducer/User/UserPage.jsx'
 
-
 function App ()
 {
   return (
@@ -32,7 +31,7 @@ function App ()
 
         <Route path='todo'>
           <Route index element={ <TodoList /> } />
-          {/* <Route path=':userId' element={ <UserPage /> } /> */}
+          <Route path=':userId' element={ <UserPage /> } />
         </Route>
 
 

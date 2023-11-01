@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
-import { getCount, increasedCount } from '../lib/redux/reducer/Post/action'
-import { useDispatch, useSelector } from 'react-redux'
 export default function Header ()
 {
 
-  const dispatch = useDispatch()
-  const count = useSelector( getCount )
+  // const dispatch = useDispatch()
+  // const count = useSelector( getCount )
 
   return (
     <div className="navbar bg-base-300">
@@ -17,12 +15,15 @@ export default function Header ()
 
         <button
           className='btn btn-primary'
-          onClick={ () => dispatch( increasedCount() ) }>
-          { count }
+          // onClick={ () => dispatch( increasedCount() ) }>
+        // { count }>
+      >
         </button>
         <ul className="menu menu-horizontal px-1">
           <li><Link to='/'>Home</Link></li>
           <li><Link to='todo'>Todo</Link></li>
+          <li><Link to='post'>Post</Link></li>
+
           <li>
             <details>
               <summary>

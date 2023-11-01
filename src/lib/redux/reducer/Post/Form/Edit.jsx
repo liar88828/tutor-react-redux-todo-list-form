@@ -1,7 +1,7 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, } from 'react-redux';
 import { useState } from 'react';
 import { selectAllUsers } from '../../User/action';
-import { addNewPosts, selectPostById, deletePosts, updatePosts } from '../action';
+import { selectPostById, useUpdatePostMutation, useDeletePostMutation } from '../action';
 import { useParams, useNavigate } from 'react-router-dom'
 
 export function Edit ()
@@ -9,14 +9,16 @@ export function Edit ()
   const { postId } = useParams()
   const navigate = useNavigate()
 
+  const [ updatePost, { isLoading } ] = useUpdatePostMutation()
+  const [ deletePost ] = useDeletePostMutation()
+
   const post = useSelector( state => selectPostById( state, Number( postId ) ) )
+
   const users = useSelector( selectAllUsers );
 
   const [ title, setTitle ] = useState( post.title );
   const [ context, setContext ] = useState( post.body );
   const [ userId, setUserId ] = useState( post.userId );
-  const [ addRequest, setAddRequest ] = useState( 'idle' );
-  const dispatch = useDispatch();
 
   if ( !postId )
   {
@@ -27,23 +29,30 @@ export function Edit ()
     )
   }
 
-  const canSave = [ title, context, userId ].every( Boolean ) && addRequest === 'idle';
+  const canSave = [ title, context, userId ].every( Boolean ) && !isLoading
 
-  const onSavePostClicked = () =>
+  const onSavePostClicked = async () =>
   {
     if ( canSave )
     {
       try
       {
-        setAddRequest( 'pending' );
-        dispatch( updatePosts( {
-          title, body: context,
-          //: nanoid()
+        // console.log(
+        //   {
+        //     title,
+        //     body: context,
+        //     id: Number( userId ),
+        //     userId: Number( userId ),
+        //     reactions: post.reactions
+        //   }
+        // )
+        await updatePost( {
+          title,
+          body: context,
           id: Number( userId ),
           userId: Number( userId ),
           reactions: post.reactions
-
-        } ) )
+        } )
           .unwrap();
 
 
@@ -56,7 +65,7 @@ export function Edit ()
       } catch ( error )
       {
         console.log( 'failed to save the post', error );
-      } finally { setAddRequest( 'idle' ); }
+      }
     }
   };
 
@@ -64,12 +73,11 @@ export function Edit ()
     value={ u.id }> { u.name } </option>
   );
 
-  const onDeletePost = () =>
+  const onDeletePost = async () =>
   {
     try
     {
-      setAddRequest( 'pending' )
-      dispatch( deletePosts( { id: post.id } ) ).unwrap()
+      await deletePost( { id: post.id } ).unwrap()
       setTitle( '' );
       setContext( '' );
       setUserId( '' );
@@ -78,10 +86,6 @@ export function Edit ()
     } catch ( error )
     {
       console.log( 'Fail to Delete the post', error )
-    }
-    finally
-    {
-      setAddRequest( 'idle' )
     }
   }
 

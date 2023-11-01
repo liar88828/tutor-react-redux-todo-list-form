@@ -1,34 +1,33 @@
-import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { selectAllUsers } from '../../User/action';
-import { addNewPosts } from '../action';
-
+import { useAddNewPostMutation } from '../action';
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux';
+import { selectAllUsers } from '../../User/action';
 
 export function Create ()
 {
+  const [ addNewPost, { isLoading } ] = useAddNewPostMutation()
   const [ title, setTitle ] = useState( '' );
   const [ context, setContext ] = useState( '' );
   const [ userId, setUserId ] = useState( '' );
-  const [ addRequest, setAddRequest ] = useState( 'idle' );
-  const dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const canSave = [ title, context, userId ].every( Boolean ) && addRequest === 'idle';
+  const users = useSelector( selectAllUsers )
+  const usersOption = users.map( u => <option key={ u.id }
+    value={ u.id }> { u.name } </option>
+  );
 
-  const users = useSelector( selectAllUsers );
-  const onSavePostClicked = () =>
+  const canSave = [ title, context, userId ].every( Boolean )
+    && !isLoading
+
+  const onSavePostClicked = async () =>
   {
     if ( canSave )
     {
       try
       {
-        setAddRequest( 'pending' );
-        dispatch( addNewPosts( {
-          title, body: context,
-          userId //: nanoid()
-        } ) )
-          .unwrap();
+        await addNewPost( { title, body: context, userId } ).unwrap()
+
         setTitle( '' );
         setContext( '' );
         setUserId( '' );
@@ -36,13 +35,9 @@ export function Create ()
       } catch ( error )
       {
         console.log( 'failed to save the post', error );
-      } finally { setAddRequest( 'idle' ); }
+      }
     }
   };
-
-  const usersOption = users.map( u => <option key={ u.id }
-    value={ u.id }> { u.name } </option>
-  );
 
   return (
     <div className="">
