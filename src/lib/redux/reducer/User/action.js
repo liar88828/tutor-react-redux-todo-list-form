@@ -1,15 +1,40 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit/dist'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit/dist'
+const USER_URL = 'https://jsonplaceholder.typicode.com/users'
+
 
 const initialState = [
-  { id: '1', name: "Philip" },
-  { id: '2', name: "Ruth", },
-  { id: '3', name: "Sue", }
+  // { id: '1', name: "Philip" },
+  // { id: '2', name: "Ruth", },
+  // { id: '3', name: "Sue", }
 ]
+
+export const fetchUsers = createAsyncThunk( 'users/fetchUsers', async () =>
+{
+  try
+  {
+    const response = await fetch( USER_URL )
+      .then( data => data.json() )
+    return response
+  } catch ( error )
+  {
+    return error.message
+  }
+} )
 
 export const usersSlice = createSlice( {
   name: "users",
   initialState,
   reducers: {
+  },
+
+
+  extraReducers ( builder )
+  {
+    builder
+      .addCase( fetchUsers.fulfilled, ( state, action ) =>
+      {
+        return action.payload
+      } )
 
   }
 } )
