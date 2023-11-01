@@ -22,17 +22,15 @@ export default function Header ()
         </button>
         <ul className="menu menu-horizontal px-1">
           <li><Link to='/'>Home</Link></li>
-          <li><Link to='post'>Post</Link></li>
-          <li><Link to='user'>users</Link></li>
-
+          <li><Link to='todo'>Todo</Link></li>
           <li>
             <details>
               <summary>
-                Parent
+                Extra
               </summary>
               <ul className="p-2 bg-base-100">
-                <li><a>Link 1</a></li>
-                <li><a>Link 2</a></li>
+                <li><Link to='post'>Post</Link></li>
+                <li><Link to='user'>users</Link></li>
               </ul>
             </details>
           </li>
